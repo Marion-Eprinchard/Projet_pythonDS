@@ -48,9 +48,9 @@ df_caract = pd.concat(
 
 # LIEUX
 # Année du fichier lieu
-df_lieux_24 = rajout_annee(df_lieux_24, "2024")
-df_lieux_23 = rajout_annee(df_lieux_23, "2023")
-df_lieux_22 = rajout_annee(df_lieux_22, "2022")
+#df_lieux_24 = rajout_annee(df_lieux_24, "2024")
+#df_lieux_23 = rajout_annee(df_lieux_23, "2023")
+#df_lieux_22 = rajout_annee(df_lieux_22, "2022")
 
 # Concaténation
 df_lieux = pd.concat(
@@ -59,9 +59,9 @@ df_lieux = pd.concat(
 )
 
 # VEHICULE
-df_vehicule_24 = rajout_annee(df_vehicule_24, "2024")
-df_vehicule_23 = rajout_annee(df_vehicule_23, "2023")
-df_vehicule_22 = rajout_annee(df_vehicule_22, "2022")
+#df_vehicule_24 = rajout_annee(df_vehicule_24, "2024")
+#df_vehicule_23 = rajout_annee(df_vehicule_23, "2023")
+#df_vehicule_22 = rajout_annee(df_vehicule_22, "2022")
 
 # concatenation
 df_vehicule = pd.concat(
@@ -70,9 +70,9 @@ df_vehicule = pd.concat(
 )
 
 # USAGER
-df_usager_24 = rajout_annee(df_usager_24, "2024")
-df_usager_23 = rajout_annee(df_usager_23, "2023")
-df_usager_22 = rajout_annee(df_usager_22, "2022")
+#df_usager_24 = rajout_annee(df_usager_24, "2024")
+#df_usager_23 = rajout_annee(df_usager_23, "2023")
+#df_usager_22 = rajout_annee(df_usager_22, "2022")
 
 # concatenation
 df_usager = pd.concat(
@@ -459,3 +459,12 @@ annee_actuel = date.today().year
 df_usager_recoder["age"] = annee_actuel - df_usager_recoder["an_nais"]
 df_usager_recoder["age"] = df_usager_recoder["age"].astype("Int64")
 df_usager_recoder = df_usager_recoder.drop(columns=["an_nais"])
+
+df_final = (
+    df_caract_recoder
+    .merge(df_lieux_recoder, on="Num_Acc", how="left")
+    .merge(df_vehicule_recoder, on="Num_Acc", how="left")
+    .merge(df_usager_recoder, on=["Num_Acc", "id_vehicule"], how="left")
+)
+
+df_final["Num_Acc"] = df_final["Num_Acc"].astype("Int64")
