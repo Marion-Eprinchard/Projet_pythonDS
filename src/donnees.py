@@ -39,6 +39,8 @@ def rajout_annee(df, an):
     return df
 
 
+df_caract_22 = df_caract_22.rename(columns={"Accident_Id": "Num_Acc"})
+
 # CARACTERISTIQUE
 # Concaténation (année déjà marquée)
 df_caract = pd.concat(
