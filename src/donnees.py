@@ -462,6 +462,9 @@ df_usager_recoder["age"] = annee_actuel - df_usager_recoder["an_nais"]
 df_usager_recoder["age"] = df_usager_recoder["age"].astype("Int64")
 df_usager_recoder = df_usager_recoder.drop(columns=["an_nais"])
 
+# enlever les doublons de corrections des données dans le fichier lieux 
+df_lieux_recoder = df_lieux_recoder.drop_duplicates(subset="Num_Acc", keep="last")
+
 df_final = (
     df_caract_recoder
     .merge(df_lieux_recoder, on="Num_Acc", how="left")
