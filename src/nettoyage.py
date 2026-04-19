@@ -1,63 +1,13 @@
-import pandas as pd
+from datetime import date
 
 
-# a mettre dans le fichier donnees.py ultérieurement
-def lecture(nom_fichier_csv):
-    df = pd.read_csv(nom_fichier_csv, sep=';', encoding='UTF-8')
-    return df
-
-
-def import_donnees():
-
-    urls = {
-        "caract": {
-            24: "https://static.data.gouv.fr/resources/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2024/20251021-115900/caract-2024.csv",
-            23: "https://static.data.gouv.fr/resources/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2023/20241028-103125/caract-2023.csv",
-            22: "https://static.data.gouv.fr/resources/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2021/20231005-093927/carcteristiques-2022.csv"
-        },
-        "lieux": {
-            24: "https://static.data.gouv.fr/resources/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2024/20251021-115812/lieux-2024.csv",
-            23: "https://static.data.gouv.fr/resources/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2023/20241023-153219/lieux-2023.csv",
-            22: "https://static.data.gouv.fr/resources/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2021/20231005-094112/lieux-2022.csv"
-        },
-        "vehicule": {
-            24: "https://static.data.gouv.fr/resources/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2024/20251107-100240/vehicules-2024.csv",
-            23: "https://static.data.gouv.fr/resources/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2023/20241023-153253/vehicules-2023.csv",
-            22: "https://static.data.gouv.fr/resources/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2021/20231005-094147/vehicules-2022.csv"
-        },
-        "usager": {
-            24: "https://static.data.gouv.fr/resources/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2024/20251021-115506/usagers-2024.csv",
-            23: "https://static.data.gouv.fr/resources/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2023/20241023-153328/usagers-2023.csv",
-            22: "https://static.data.gouv.fr/resources/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2021/20231005-094229/usagers-2022.csv"
-        }
-    }
-
-    donnees_completes = {}
-
-    for table, annees in urls.items():
-        donnees_completes[table] = {}
-        for annee, url in annees.items():
-            donnees_completes[table][annee] = lecture(url)
-
-    return donnees_completes
-
-
-def renomer_cle_jointure(nom_table, nouveau_nom, ancien_nom):
-    df = nom_table.rename(columns={ancien_nom: nouveau_nom})
-    return df
-
-
-def concatenation_annees(donnees, table, annees=[24, 23, 22]):
-    return pd.concat([donnees[table][a] for a in annees], ignore_index=True)
-
-
-# a laisser dans le fichier nettoyage 
 # Fonction pour le recodage
 def recodage(df, mapping):
     df2 = df.copy()
     for col, dic in mapping.items():
         df2[col] = df2[col].map(dic)
     return df2
+
 
 def mapping_renommer_colonnes():
     # MAPPING
@@ -78,11 +28,11 @@ def mapping_renommer_colonnes():
     }
 
     nouveau_lum = {
-        1:"Plein jour",
-        2:"Crépuscule ou aube",
-        3:"Nuit sans éclairage public",
-        4:"Nuit avec éclairage public non allumé",
-        5:"Nuit avec éclairage public allumé"
+        1: "Plein jour",
+        2: "Crépuscule ou aube",
+        3: "Nuit sans éclairage public",
+        4: "Nuit avec éclairage public non allumé",
+        5: "Nuit avec éclairage public allumé"
     }
 
     nouveau_agg = {
@@ -91,39 +41,39 @@ def mapping_renommer_colonnes():
     }
 
     nouveau_int = {
-        1:"Hors intersection",
-        2:"Intersection en X",
-        3:"Intersection en T",
-        4:"Intersection en Y",
-        5:"Intersection à plus de 4 branches",
-        6:"Giratoire",
-        7:"Place",
-        8:"Passage à niveau",
-        9:"Autre intersection"
+        1: "Hors intersection",
+        2: "Intersection en X",
+        3: "Intersection en T",
+        4: "Intersection en Y",
+        5: "Intersection à plus de 4 branches",
+        6: "Giratoire",
+        7: "Place",
+        8: "Passage à niveau",
+        9: "Autre intersection"
     }
 
     nouveau_atm = {
-        -1:"Non renseigné",
-        1:"Normale",
-        2:"Pluie légère",
-        3:"Pluie forte",
-        4:"Neige - grêle",
-        5:"Brouillard - fumée",
-        6:"Vent fort - tempête",
-        7:"Temps éblouissant",
-        8:"Temps couvert",
-        9:"Autre"
+        -1: "Non renseigné",
+        1: "Normale",
+        2: "Pluie légère",
+        3: "Pluie forte",
+        4: "Neige - grêle",
+        5: "Brouillard - fumée",
+        6: "Vent fort - tempête",
+        7: "Temps éblouissant",
+        8: "Temps couvert",
+        9: "Autre"
     }
 
     nouveau_col = {
-        -1:"Non renseigné",
-        1:"Deux véhicules - frontale",
-        2:"Deux véhicules - par l'arrière",
-        3:"Deux véhicules - par le côté",
-        4:"Trois véhicules - en chaîne",
-        5:"Trois véhicules - collisions multiples",
-        6:"Autre collision",
-        7:"Sans collision"
+        -1: "Non renseigné",
+        1: "Deux véhicules - frontale",
+        2: "Deux véhicules - par l'arrière",
+        3: "Deux véhicules - par le côté",
+        4: "Trois véhicules - en chaîne",
+        5: "Trois véhicules - collisions multiples",
+        6: "Autre collision",
+        7: "Sans collision"
     }
 
     # lieux
@@ -254,95 +204,95 @@ def mapping_renommer_colonnes():
     }
 
     choc_dict = {
-        -1 : "Non renseigné",
-        0 : "Aucun",
-        1 : "Avant",
-        2 : "Avant droit",
-        3 : "Avant gauche",
-        4 : "Arrière",
-        5 : "Arrière droit",
-        6 : "Arrière gauche",
-        7 : "Côté droit",
-        8 : "Côté gauche",
-        9 : "Chocs multiples (tonneaux)"
+        -1: "Non renseigné",
+        0: "Aucun",
+        1: "Avant",
+        2: "Avant droit",
+        3: "Avant gauche",
+        4: "Arrière",
+        5: "Arrière droit",
+        6: "Arrière gauche",
+        7: "Côté droit",
+        8: "Côté gauche",
+        9: "Chocs multiples (tonneaux)"
     }
 
     manv_dict = {
-        -1 : "Non renseigné",
-        0 : "Inconnue",
-        1 : "Sans changement de direction",
-        2 : "Même sens, même file",
-        3 : "Entre 2 files",
-        4 : "En marche arrière",
-        5 : "A contresens",
-        6 : "En franchissant le terre-plein central",
-        7 : "Dans le couloir bus, dans le même sens",
-        8 : "Dans le couloir bus, dans le sens inverse",
-        9 : "En s’insérant",
-        10 : "En faisant demi-tour sur la chaussée",
+        -1: "Non renseigné",
+        0: "Inconnue",
+        1: "Sans changement de direction",
+        2: "Même sens, même file",
+        3: "Entre 2 files",
+        4: "En marche arrière",
+        5: "A contresens",
+        6: "En franchissant le terre-plein central",
+        7: "Dans le couloir bus, dans le même sens",
+        8: "Dans le couloir bus, dans le sens inverse",
+        9: "En s’insérant",
+        10: "En faisant demi-tour sur la chaussée",
 
-        11 : "Changeant  de file",
-        12 : "Changeant  de file",
+        11: "Changeant  de file",
+        12: "Changeant  de file",
 
-        13 : "Déporté",
-        14 : "Déporté",
+        13: "Déporté",
+        14: "Déporté",
 
-        15 : "Tournant",
-        16 : "Tournant",
+        15: "Tournant",
+        16: "Tournant",
 
-        17 : "Dépassant",
-        18 : "Dépassant",
+        17: "Dépassant",
+        18: "Dépassant",
 
-        #Divers
-        19 : "Traversant la chaussée",
-        20 : "Manœuvre de stationnement",
-        21 : "Manœuvre d’évitement",
-        22 : "Ouverture de porte",
-        23 : "Arrêté (hors stationnement)",
-        24 : "En stationnement",
-        25 : "Circulant sur trottoir",
-        26 : "Autres manœuvres"
+        # Divers
+        19: "Traversant la chaussée",
+        20: "Manœuvre de stationnement",
+        21: "Manœuvre d’évitement",
+        22: "Ouverture de porte",
+        23: "Arrêté (hors stationnement)",
+        24: "En stationnement",
+        25: "Circulant sur trottoir",
+        26: "Autres manœuvres"
 
     }
 
     obs_dict = {
-        -1 : "Non renseigné",
-        0 : "Sans objet",
-        1 : "Véhicule en stationnement",
-        2 : "Arbre",
-        3 : "Glissière métallique",
-        4 : "Glissière béton",
-        5 : "Autre glissière",
-        6 : "Bâtiment, mur, pile de pont",
-        7 : "Support de signalisation verticale ou poste d’appel d’urgence",
-        8 : "Poteau",
-        9 : "Mobilier urbain",
-        10 : "Parapet",
-        11 : "Ilot, refuge, borne haute",
-        12 : "Bordure de trottoir",
-        13 : "Fossé, talus, paroi rocheuse",
-        14 : "Autre obstacle fixe sur chaussée",
-        15 : "Autre obstacle fixe sur trottoir ou accotement",
-        16 : "Sortie de chaussée sans obstacle",
-        17 : "Buse – tête d’aqueduc"
+        -1: "Non renseigné",
+        0: "Sans objet",
+        1: "Véhicule en stationnement",
+        2: "Arbre",
+        3: "Glissière métallique",
+        4: "Glissière béton",
+        5: "Autre glissière",
+        6: "Bâtiment, mur, pile de pont",
+        7: "Support de signalisation verticale ou poste d’appel d’urgence",
+        8: "Poteau",
+        9: "Mobilier urbain",
+        10: "Parapet",
+        11: "Ilot, refuge, borne haute",
+        12: "Bordure de trottoir",
+        13: "Fossé, talus, paroi rocheuse",
+        14: "Autre obstacle fixe sur chaussée",
+        15: "Autre obstacle fixe sur trottoir ou accotement",
+        16: "Sortie de chaussée sans obstacle",
+        17: "Buse – tête d’aqueduc"
     }
 
     obsm_dict = {
-        -1 : "Non renseigné",
-        0 : "Aucun",
-        1 : "Piéton",
-        2 : "Véhicule",
-        4 : "Véhicule sur rail",
-        5 : "Animal domestique",
-        6 : "Animal sauvage",
-        9 : "Autre"
+        -1: "Non renseigné",
+        0: "Aucun",
+        1: "Piéton",
+        2: "Véhicule",
+        4: "Véhicule sur rail",
+        5: "Animal domestique",
+        6: "Animal sauvage",
+        9: "Autre"
     }
 
     # usager
     catu_dict = {
-        1 : "Conducteur",
-        2 : "Passager",
-        3 : "Piéton"
+        1: "Conducteur",
+        2: "Passager",
+        3: "Piéton"
     }
 
     grav_dict = {
@@ -357,10 +307,9 @@ def mapping_renommer_colonnes():
         2: "Femme"
     }
 
-
     trajet_dict = {
-        -1 : "Non renseigné",
-        0 : "Non renseigné",
+        -1: "Non renseigné",
+        0: "Non renseigné",
         1: "Domicile - Travail",
         2: "Domicile - École",
         3: "Courses - achats",
@@ -370,76 +319,81 @@ def mapping_renommer_colonnes():
     }
 
     secu_dict = {
-        -1 : "Non renseigné",
-        0 : "Aucun équipement",
-        1 : "Ceinture",
-        2 : "Casque",
-        3 : "Dispositif enfants",
-        4 : "Gilet réfléchissant",
-        5 : "Airbag (2RM/3RM)",
-        6 : "Gants (2RM/3RM)",
-        7 : "Gants + Airbag (2RM/3RM)",
-        8 : "Non déterminable",
-        9 : "Autre"
+        -1: "Non renseigné",
+        0: "Aucun équipement",
+        1: "Ceinture",
+        2: "Casque",
+        3: "Dispositif enfants",
+        4: "Gilet réfléchissant",
+        5: "Airbag (2RM/3RM)",
+        6: "Gants (2RM/3RM)",
+        7: "Gants + Airbag (2RM/3RM)",
+        8: "Non déterminable",
+        9: "Autre"
     }
 
-    return ...
-
-
-# recodage 
-df_caract_recoder = recodage(
-    df_caract, 
-    {
-        "mois": nouveau_mois,
-        "lum": nouveau_lum, 
-        "agg": nouveau_agg,
-        "int": nouveau_int,
-        "atm": nouveau_atm,
-        "col": nouveau_col
+    return {
+        "caract": {
+            "mois": nouveau_mois,
+            "lum": nouveau_lum,
+            "agg": nouveau_agg,
+            "int": nouveau_int,
+            "atm": nouveau_atm,
+            "col": nouveau_col
+        },
+        "lieux": {
+            "catr": nouveau_catr,
+            "circ": nouveau_circ,
+            "vosp": nouveau_vosp,
+            "prof": nouveau_prof,
+            "plan": nouveau_plan,
+            "surf": nouveau_surf,
+            "infra": nouveau_infra,
+            "situ": nouveau_situ
+        },
+        "vehicule": {
+            "catv": catv_dict,
+            "choc": choc_dict,
+            "manv": manv_dict,
+            "obs": obs_dict,
+            "obsm": obsm_dict
+        },
+        "usager": {
+            "catu": catu_dict,
+            "grav": grav_dict,
+            "sexe": sexe_dict,
+            "trajet": trajet_dict,
+            "secu1": secu_dict,
+            "secu2": secu_dict,
+            "secu3": secu_dict
+        }
     }
-)
 
-df_caract_recoder
 
-df_lieux_recoder = recodage(
-    df_lieux, 
-    {
-        "catr": nouveau_catr,
-        "circ": nouveau_circ, 
-        "vosp": nouveau_vosp,
-        "prof": nouveau_prof,
-        "plan": nouveau_plan,
-        "surf": nouveau_surf,
-        "infra": nouveau_infra
-    }
-)
+# supprimer les colonnes non interressante pour notre problèmatique
+def colonnes_a_supprimer():
+    return {"num_veh_x", "senc", "motor", "occutc", "num_veh_y", "place", "locp", "actp", "etatp"}
 
-df_lieux_recoder
 
-df_vehicule_recoder = recodage(df_vehicule, {"catv": catv_dict, "choc": choc_dict, "manv": manv_dict, "obs": obs_dict, "obsm": obsm_dict})
-### suppression des colonnes 
-df_vehicule_recoder = df_vehicule_recoder.drop(columns=["num_veh", "senc", "motor", "occutc"])
+# transformation année de naissance en age
+def création_age_usager(df):
+    annee_actuel = date.today().year
 
-df_usager_supp = df_usager.drop(columns=["num_veh", "place", "locp", "actp", "etatp"])
-df_usager_recoder = recodage(df_usager_supp, {"catu": catu_dict, "grav": grav_dict, "sexe": sexe_dict, "trajet": trajet_dict, "secu1": secu_dict, "secu2": secu_dict, "secu3": secu_dict})
+    df["age"] = annee_actuel - df["an_nais"]
+    df["age"] = df["age"].astype("Int64")
+    df_new = df.drop(columns=["an_nais"])
 
-# transformation année de naissance en age 
-from datetime import date
+    return df_new
 
-annee_actuel = date.today().year
 
-df_usager_recoder["age"] = annee_actuel - df_usager_recoder["an_nais"]
-df_usager_recoder["age"] = df_usager_recoder["age"].astype("Int64")
-df_usager_recoder = df_usager_recoder.drop(columns=["an_nais"])
+# Jointure des 4 df
+def jointure(df1, df2, df3, df4):
+    df_final = (
+        df1
+        .merge(df2, on="Num_Acc", how="left")
+        .merge(df3, on="Num_Acc", how="left")
+        .merge(df4, on=["Num_Acc", "id_vehicule"], how="left")
+    )
+    df_final["Num_Acc"] = df_final["Num_Acc"].astype("Int64")
 
-# enlever les doublons de corrections des données dans le fichier lieux 
-df_lieux_recoder = df_lieux_recoder.drop_duplicates(subset="Num_Acc", keep="last")
-
-df_final = (
-    df_caract_recoder
-    .merge(df_lieux_recoder, on="Num_Acc", how="left")
-    .merge(df_vehicule_recoder, on="Num_Acc", how="left")
-    .merge(df_usager_recoder, on=["Num_Acc", "id_vehicule"], how="left")
-)
-
-df_final["Num_Acc"] = df_final["Num_Acc"].astype("Int64")
+    return df_final
