@@ -1,4 +1,6 @@
+import pandas as pd
 from datetime import date
+import numpy as np
 
 
 # Fonction pour le recodage
@@ -7,6 +9,11 @@ def recodage(df, mapping):
     for col, dic in mapping.items():
         df2[col] = df2[col].map(dic)
     return df2
+
+
+def creation_mois_num(df):
+    df["mois_num"] = df["mois"]
+    return df
 
 
 def mapping_renommer_colonnes():
@@ -53,7 +60,7 @@ def mapping_renommer_colonnes():
     }
 
     nouveau_atm = {
-        -1: "Non renseigné",
+        -1: np.nan,
         1: "Normale",
         2: "Pluie légère",
         3: "Pluie forte",
@@ -66,7 +73,7 @@ def mapping_renommer_colonnes():
     }
 
     nouveau_col = {
-        -1: "Non renseigné",
+        -1: np.nan,
         1: "Deux véhicules - frontale",
         2: "Deux véhicules - par l'arrière",
         3: "Deux véhicules - par le côté",
@@ -89,7 +96,7 @@ def mapping_renommer_colonnes():
     }
 
     nouveau_circ = {
-        -1: "Non renseigné",
+        -1: np.nan,
         1: "À sens unique",
         2: "Bidirectionnelle",
         3: "À chaussées séparées",
@@ -97,7 +104,7 @@ def mapping_renommer_colonnes():
     }
 
     nouveau_vosp = {
-        -1: "Non renseigné",
+        -1: np.nan,
         0: "Sans objet",
         1: "Piste cyclable",
         2: "Bande cyclable",
@@ -105,7 +112,7 @@ def mapping_renommer_colonnes():
     }
 
     nouveau_prof = {
-        -1: "Non renseigné",
+        -1: np.nan,
         1: "Plat",
         2: "Pente",
         3: "Sommet de côte",
@@ -113,7 +120,7 @@ def mapping_renommer_colonnes():
     }
 
     nouveau_plan = {
-        -1: "Non renseigné",
+        -1: np.nan,
         1: "Partie rectiligne",
         2: "En courbe à gauche",
         3: "En courbe à droite",
@@ -121,7 +128,7 @@ def mapping_renommer_colonnes():
     }
 
     nouveau_surf = {
-        -1: "Non renseigné",
+        -1: np.nan,
         1: "Normale",
         2: "Mouillée",
         3: "Flaques",
@@ -134,7 +141,7 @@ def mapping_renommer_colonnes():
     }
 
     nouveau_infra = {
-        -1: "Non renseigné",
+        -1: np.nan,
         0: "Aucun",
         1: "Souterrain - Tunnel",
         2: "Pont - Autopont",
@@ -148,7 +155,7 @@ def mapping_renommer_colonnes():
     }
 
     nouveau_situ = {
-        -1: "Non renseigné",
+        -1: np.nan,
         0: "Aucun",
         1: "Sur chaussée",
         2: "Sur bande d'arrêt d'urgence",
@@ -204,7 +211,7 @@ def mapping_renommer_colonnes():
     }
 
     choc_dict = {
-        -1: "Non renseigné",
+        -1: np.nan,
         0: "Aucun",
         1: "Avant",
         2: "Avant droit",
@@ -218,7 +225,7 @@ def mapping_renommer_colonnes():
     }
 
     manv_dict = {
-        -1: "Non renseigné",
+        -1: np.nan,
         0: "Inconnue",
         1: "Sans changement de direction",
         2: "Même sens, même file",
@@ -256,7 +263,7 @@ def mapping_renommer_colonnes():
     }
 
     obs_dict = {
-        -1: "Non renseigné",
+        -1: np.nan,
         0: "Sans objet",
         1: "Véhicule en stationnement",
         2: "Arbre",
@@ -278,7 +285,7 @@ def mapping_renommer_colonnes():
     }
 
     obsm_dict = {
-        -1: "Non renseigné",
+        -1: np.nan,
         0: "Aucun",
         1: "Piéton",
         2: "Véhicule",
@@ -308,8 +315,8 @@ def mapping_renommer_colonnes():
     }
 
     trajet_dict = {
-        -1: "Non renseigné",
-        0: "Non renseigné",
+        -1: np.nan,
+        0: np.nan,
         1: "Domicile - Travail",
         2: "Domicile - École",
         3: "Courses - achats",
@@ -319,7 +326,7 @@ def mapping_renommer_colonnes():
     }
 
     secu_dict = {
-        -1: "Non renseigné",
+        -1: np.nan,
         0: "Aucun équipement",
         1: "Ceinture",
         2: "Casque",
@@ -372,7 +379,9 @@ def mapping_renommer_colonnes():
 
 # supprimer les colonnes non interressante pour notre problèmatique
 def colonnes_a_supprimer():
-    return {"num_veh_x", "senc", "motor", "occutc", "num_veh_y", "place", "locp", "actp", "etatp"}
+    return {"com", "adr", "voie", "v1", "v2", "num_veh_x", "senc", "motor", "occutc", "num_veh_y",
+            "place", "locp", "actp", "etatp", "vops", "pr", "pr1", "lartpc", "larrout", "secu2",
+            "secu3"}
 
 
 # transformation année de naissance en age
@@ -397,3 +406,26 @@ def jointure(df1, df2, df3, df4):
     df_final["Num_Acc"] = df_final["Num_Acc"].astype("Int64")
 
     return df_final
+
+
+def rajout_colonnes(df):
+    # colonne date
+    df["date"] = pd.to_datetime(df[["an", "mois_num", "jour"]].rename(columns={
+        "an": "year",
+        "mois_num": "month",
+        "jour": "day"
+    }))
+
+    jours_semaine = {
+        "Monday": "Lundi", "Tuesday": "Mardi", "Wednesday": "Mercredi",
+        "Thursday": "Jeudi", "Friday": "Vendredi", "Saturday": "Samedi",
+        "Sunday": "Dimanche"
+    }
+
+    # jour de la semaine
+    df["jour_semaine"] = df["date"].dt.day_name().map(jours_semaine)
+
+    # heure
+    df["hr"] = df["hrmn"].str[0:2]
+
+    return df
