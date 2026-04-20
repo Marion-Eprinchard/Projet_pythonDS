@@ -4,6 +4,9 @@ import matplotlib.ticker as mtick
 
 
 def initialisation_carte():
+    """
+    Récupération des informations pour générer des cartes
+    """
     departement_borders = carti_download(
         values=["France"],
         crs=4326,
@@ -19,40 +22,78 @@ def initialisation_carte():
 
 
 def creation_df_carte(df, blessure=False, an=False):
+    """
+    Création des cartes à partir des dataframes par departement,
+    possibilité de regroupement en fonction de la blessure et/ou de l'année
+    """
 
     if not an:
         if not blessure:
-            df_victimes_dep = df.groupby("dep").size().reset_index(name="nb_victimes")
+            # nombre par departement
+            df_victimes_dep = (
+                df
+                .groupby("dep")
+                .size()
+                .reset_index(name="nb_victimes")
+            )
             total = df_victimes_dep["nb_victimes"].sum()
 
             df_victimes_dep["nb_victimes_tot"] = total
+            # calcul de la proportion
             df_victimes_dep["proportion"] = df_victimes_dep["nb_victimes"] / total * 100
 
             df_final = df_victimes_dep
 
         else:
-            df_victimes_total = df.groupby("dep").size().reset_index(name="nb_victimes_tot")
-            df_victimes_dep = df.groupby(["dep", "grav"]).size().reset_index(name="nb_victimes")
+            # nombre par departement
+            df_victimes_total = (
+                df
+                .groupby("dep")
+                .size()
+                .reset_index(name="nb_victimes_tot")
+            )
+            # nombre par departement et gravité
+            df_victimes_dep = (
+                df
+                .groupby(["dep", "grav"])
+                .size()
+                .reset_index(name="nb_victimes")
+            )
 
             df_final = df_victimes_dep.merge(df_victimes_total, on="dep", how="left")
+            # calcul de la proportion
             df_final["proportion"] = df_final["nb_victimes"] / df_final["nb_victimes_tot"] * 100
 
     else:
         if not blessure:
-            df_victimes_total = df.groupby("an").size().reset_index(name="nb_victimes_tot")
-            df_victimes_dep = df.groupby(["dep", "an"]).size().reset_index(name="nb_victimes")
+            # nombre par année
+            df_victimes_total = (
+                df
+                .groupby("an")
+                .size()
+                .reset_index(name="nb_victimes_tot")
+            )
+            # nombre par département et année
+            df_victimes_dep = (
+                df
+                .groupby(["dep", "an"])
+                .size()
+                .reset_index(name="nb_victimes")
+            )
 
             df_final = df_victimes_dep.merge(df_victimes_total, on=["an"], how="left")
+            # calcul de la proportion
             df_final["proportion"] = df_final["nb_victimes"] / df_final["nb_victimes_tot"] * 100
 
         else:
+            # nombre pas année et departement
             df_victimes_total = (
                 df
                 .groupby(["an", "dep"])
                 .size()
                 .reset_index(name="nb_victimes_tot")
-                )
-
+            )
+            # nombre par année, département et gravité de l'accident
             df_victimes_dep = (
                 df
                 .groupby(["an", "dep", "grav"])
@@ -60,8 +101,10 @@ def creation_df_carte(df, blessure=False, an=False):
                 .reset_index(name="nb_victimes"))
 
             df_final = df_victimes_dep.merge(df_victimes_total, on=["an", "dep"], how="left")
+            # calcul de la proportion
             df_final["proportion"] = df_final["nb_victimes"] / df_final["nb_victimes_tot"] * 100
 
+    # Jointure avec les données des cartes
     df_carte = initialisation_carte().merge(
         df_final,
         on="dep",
@@ -76,8 +119,8 @@ def carte_departement(df_carte, blessure=None, an=None, ax=None):
     Fonction pour créer une carte en proportion
 
     df_carte : DataFrame produit par creation_df_carte()
-    blessure : None, ou une valeur de gravité (ex : "Tué", "Blessé léger")
-    an       : None, ou une année (ex : 2022)
+    blessure : None, ou une valeur de gravité (ex : "Tué", "Blessé léger", ...)
+    an       : None, ou une année (ex : 2022, ...)
     """
 
     df_carte = df_carte.copy()

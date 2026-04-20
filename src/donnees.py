@@ -2,11 +2,19 @@ import pandas as pd
 
 
 def lecture(nom_fichier_csv):
+    """
+    Lecture des fichiers de données en dataframe
+    """
     df = pd.read_csv(nom_fichier_csv, sep=';', encoding='UTF-8')
     return df
 
 
 def import_donnees():
+    """
+    Importation des fichiers de données
+
+    Retour : dictionnaire des données des 4 fichiers
+    """
     urls = {
         "caract": {
             24: ("https://static.data.gouv.fr/resources/bases-de-donnees-annuelles-des-accidents-"
@@ -56,6 +64,7 @@ def import_donnees():
 
     donnees_completes = {}
 
+    # Transformation de chaque url de données
     for table, annees in urls.items():
         donnees_completes[table] = {}
         for annee, url in annees.items():
@@ -65,9 +74,18 @@ def import_donnees():
 
 
 def renomer_cle_jointure(nom_table, nouveau_nom, ancien_nom):
+    """
+    Renommer la clé de jointure
+    """
     df = nom_table.rename(columns={ancien_nom: nouveau_nom})
     return df
 
 
 def concatenation_annees(donnees, table, annees=[24, 23, 22]):
+    """
+    Concaténation des 3 années 2022, 2023 et 2024
+
+    donnees : dictionnaire
+    table : nom du fichier (caract, lieux, vehicule, usager)
+    """
     return pd.concat([donnees[table][a] for a in annees], ignore_index=True)
