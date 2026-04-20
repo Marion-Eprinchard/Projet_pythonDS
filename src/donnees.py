@@ -7,7 +7,6 @@ def lecture(nom_fichier_csv):
 
 
 def import_donnees():
-
     urls = {
         "caract": {
             24: ("https://static.data.gouv.fr/resources/bases-de-donnees-annuelles-des-accidents-"
