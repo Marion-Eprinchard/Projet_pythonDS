@@ -5,6 +5,12 @@ import numpy as np
 
 # Fonction pour le recodage
 def recodage(df, mapping):
+    """
+    Recodage du noms des variables
+
+    df : dataframe a renommer
+    mapping : table du dictionnaire avec le recodage
+    """
     df2 = df.copy()
     for col, dic in mapping.items():
         df2[col] = df2[col].map(dic)
@@ -12,6 +18,8 @@ def recodage(df, mapping):
 
 
 def creation_mois_num(df):
+    """
+    """
     df["mois_num"] = df["mois"]
     return df
 
