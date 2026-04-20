@@ -14,7 +14,7 @@ def compter_par_mois(df, variable, condition_grav=None):
         .assign(periode=lambda x: x["date"].dt.to_period("M"))
         .groupby("periode")
         .size()
-        .reset_index("nb")
+        .reset_index(name="nb")
     )
 
 
@@ -57,17 +57,22 @@ def evolution_mensuelle(df):
 
 
 def nb_accidents_par(df, variable, nom_variable, ordre=None, afficher_nb=False):
-    nb_accidents_groupe = df.drop_duplicates(subset="Num_Acc").groupby(variable).size().reset_index("Nombre d'accidents")
+    nb_accidents_groupe = (
+        df.drop_duplicates(subset="Num_Acc")
+        .groupby(variable)
+        .size()
+        .reset_index(name="nb_accidents")
+    )
 
     if ordre is not None:
         nb_accidents_groupe = (
             nb_accidents_groupe
             .set_index(variable)
             .reindex(ordre)
-            .reset_index("Nombre d'accidents")
+            .reset_index()
         )
 
-    bars = plt.bar(nb_accidents_groupe[variable], nb_accidents_groupe["Nombre d'accidents"])
+    bars = plt.bar(nb_accidents_groupe[variable], nb_accidents_groupe["nb_accidents"])
 
     if afficher_nb:
         for bar in bars:
@@ -75,7 +80,7 @@ def nb_accidents_par(df, variable, nom_variable, ordre=None, afficher_nb=False):
             plt.text(
                 bar.get_x() + bar.get_width() / 2,
                 height,
-                f"{int(height)}",
+                int(height), # f"{int(height)}",
                 ha="center", va="bottom",
                 fontsize=9
             )
@@ -87,8 +92,39 @@ def nb_accidents_par(df, variable, nom_variable, ordre=None, afficher_nb=False):
     plt.title(f"Nombre d'accidents selon leur {nom_variable.lower()}")
     plt.show()
 
+# def nb_accidents_par(df, variable, nom_variable, ordre=None, afficher_nb=False):
+#     nb_accidents_groupe = df.drop_duplicates(subset="Num_Acc").groupby(variable).size().reset_index(names="Nombre d'accidents")
+
+#     if ordre is not None:
+#         nb_accidents_groupe = (
+#             nb_accidents_groupe
+#             .set_index(variable)
+#             .reindex(ordre)
+#             .reset_index(names="Nombre d'accidents")
+#         )
+
+#     bars = plt.bar(nb_accidents_groupe[variable], nb_accidents_groupe["Nombre d'accidents"])
+
+#     if afficher_nb:
+#         for bar in bars:
+#             height = bar.get_height()
+#             plt.text(
+#                 bar.get_x() + bar.get_width() / 2,
+#                 height,
+#                 f"{int(height)}",
+#                 ha="center", va="bottom",
+#                 fontsize=9
+#             )
+
+#     plt.grid(which="both", axis="y")
+#     plt.xticks(rotation=45, ha="right")
+#     plt.xlabel(nom_variable)
+#     plt.ylabel("Accidents")
+#     plt.title(f"Nombre d'accidents selon leur {nom_variable.lower()}")
+#     plt.show()
+
 # def nb_accidents_par(df, variable, nom_variable, afficher_nb=False):
-#     nb_accidents_groupe = df.groupby(variable).count().reset_index()
+#     nb_accidents_groupe = df.groupby(variable).count().reset_index(names=)
 
 #     bars = plt.bar(nb_accidents_groupe[variable], nb_accidents_groupe["Num_Acc"])
 
