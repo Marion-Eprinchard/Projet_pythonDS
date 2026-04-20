@@ -14,7 +14,7 @@ def compter_par_mois(df, variable, condition_grav=None):
         .assign(periode=lambda x: x["date"].dt.to_period("M"))
         .groupby("periode")
         .size()
-        .reset_index(name="nb")
+        .reset_index("nb")
     )
 
 
@@ -57,17 +57,17 @@ def evolution_mensuelle(df):
 
 
 def nb_accidents_par(df, variable, nom_variable, ordre=None, afficher_nb=False):
-    nb_accidents_groupe = df.drop_duplicates(subset="Acc_Num").groupby(variable).size().reset_index("Nombre d'accidents")
+    nb_accidents_groupe = df.drop_duplicates(subset="Num_Acc").groupby(variable).size().reset_index("Nombre d'accidents")
 
     if ordre is not None:
         nb_accidents_groupe = (
             nb_accidents_groupe
             .set_index(variable)
             .reindex(ordre)
-            .reset_index()
+            .reset_index("Nombre d'accidents")
         )
 
-    bars = plt.bar(nb_accidents_groupe[variable], nb_accidents_groupe["Num_Acc"])
+    bars = plt.bar(nb_accidents_groupe[variable], nb_accidents_groupe["Nombre d'accidents"])
 
     if afficher_nb:
         for bar in bars:
@@ -81,7 +81,6 @@ def nb_accidents_par(df, variable, nom_variable, ordre=None, afficher_nb=False):
             )
 
     plt.grid(which="both", axis="y")
-    plt.xticks(nb_accidents_groupe[variable])
     plt.xticks(rotation=45, ha="right")
     plt.xlabel(nom_variable)
     plt.ylabel("Accidents")
