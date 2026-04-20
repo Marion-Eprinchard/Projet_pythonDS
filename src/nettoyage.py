@@ -399,7 +399,7 @@ def colonnes_a_supprimer():
     """
     return {"com", "adr", "voie", "v1", "v2", "num_veh_x", "senc", "motor", "occutc", "num_veh_y",
             "place", "locp", "actp", "etatp", "vops", "pr", "pr1", "lartpc", "larrout", "secu2",
-            "secu3"}
+            "secu3", "nbv"}
 
 
 # transformation année de naissance en age
