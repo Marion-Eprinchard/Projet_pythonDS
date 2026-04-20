@@ -4,18 +4,70 @@ import matplotlib.cm as cm
 from scipy.stats import chi2_contingency
 
 
+def compter_par_mois(df, variable, condition_grav=None):
+    filtre = df
+    if condition_grav is not None:
+        filtre = df[df["grav"].isin(condition_grav)]
+    return (
+        filtre
+        .drop_duplicates(subset=variable)
+        .assign(periode=lambda x: x["date"].dt.to_period("M"))
+        .groupby("periode")
+        .size()
+        .reset_index("nb")
+    )
+
+
+def evolution_mensuelle(df):
+
+    accidents = compter_par_mois(df, "Num_Acc")
+    usagers = compter_par_mois(df, "id_usager")
+    victimes = compter_par_mois(
+        df,
+        "id_usager",
+        condition_grav=["Blessé léger", "Blessé hospitalisé", "Tué"]
+    )
+
+    dates = accidents["periode"].dt.to_timestamp()
+    labels_xticks = dates.dt.strftime("%b %Y")  # renommé
+
+    fig, ax = plt.subplots(figsize=(12, 4))
+
+    ax.plot(range(len(accidents)), accidents["nb"], label="Accidents")
+    ax.plot(range(len(usagers)),   usagers["nb"],   label="Usagers impliqués")
+    ax.plot(range(len(victimes)),  victimes["nb"],  label="Victimes non indemnes")
+
+    ax.set_xticks(range(len(accidents)))
+    ax.set_xticklabels(labels_xticks, rotation=45, ha="right")  # renommé
+    ax.set_ylim(bottom=0)
+    ax.set_xlabel("Date")
+    ax.set_ylabel("Nombre")
+    ax.set_title("Évolution mensuelle des accidents et usagers impliqués")
+
+    handles, labels_legende = ax.get_legend_handles_labels()  # renommé
+    ordre_legende = [1, 2, 0]
+    ax.legend(
+        [handles[i] for i in ordre_legende],
+        [labels_legende[i] for i in ordre_legende]
+    )
+
+    plt.grid(axis="both")
+    plt.tight_layout()
+    plt.show()
+
+
 def nb_accidents_par(df, variable, nom_variable, ordre=None, afficher_nb=False):
-    nb_accidents_groupe = df.groupby(variable).count().reset_index()
+    nb_accidents_groupe = df.drop_duplicates(subset="Num_Acc").groupby(variable).size().reset_index("Nombre d'accidents")
 
     if ordre is not None:
         nb_accidents_groupe = (
             nb_accidents_groupe
             .set_index(variable)
             .reindex(ordre)
-            .reset_index()
+            .reset_index("Nombre d'accidents")
         )
 
-    bars = plt.bar(nb_accidents_groupe[variable], nb_accidents_groupe["Num_Acc"])
+    bars = plt.bar(nb_accidents_groupe[variable], nb_accidents_groupe["Nombre d'accidents"])
 
     if afficher_nb:
         for bar in bars:
@@ -29,7 +81,6 @@ def nb_accidents_par(df, variable, nom_variable, ordre=None, afficher_nb=False):
             )
 
     plt.grid(which="both", axis="y")
-    plt.xticks(nb_accidents_groupe[variable])
     plt.xticks(rotation=45, ha="right")
     plt.xlabel(nom_variable)
     plt.ylabel("Accidents")
