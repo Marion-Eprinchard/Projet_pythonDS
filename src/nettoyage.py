@@ -19,12 +19,19 @@ def recodage(df, mapping):
 
 def creation_mois_num(df):
     """
+    Création colonne du numéro du mois
     """
     df["mois_num"] = df["mois"]
     return df
 
 
 def mapping_renommer_colonnes():
+    """
+    Renomage des variables pour effectuer le recodage
+
+    Retour : dictionnaire avec 4 table (caract, lieux, vehicule, usager)
+    et les valeurs à renommer
+    """
     # MAPPING
     # caracteristique
     nouveau_mois = {
@@ -387,6 +394,9 @@ def mapping_renommer_colonnes():
 
 # supprimer les colonnes non interressante pour notre problèmatique
 def colonnes_a_supprimer():
+    """
+    Suppression des colonnes inutiles
+    """
     return {"com", "adr", "voie", "v1", "v2", "num_veh_x", "senc", "motor", "occutc", "num_veh_y",
             "place", "locp", "actp", "etatp", "vops", "pr", "pr1", "lartpc", "larrout", "secu2",
             "secu3"}
@@ -394,6 +404,9 @@ def colonnes_a_supprimer():
 
 # transformation année de naissance en age
 def création_age_usager(df):
+    """
+    Création de l'age de l'usager à partir de son année de naissance
+    """
     annee_actuel = date.today().year
 
     df["age"] = annee_actuel - df["an_nais"]
@@ -405,6 +418,9 @@ def création_age_usager(df):
 
 # Jointure des 4 df
 def jointure(df1, df2, df3, df4):
+    """
+    Jointure des 4 dataframe de données
+    """
     df_final = (
         df1
         .merge(df2, on="Num_Acc", how="left")
@@ -417,6 +433,9 @@ def jointure(df1, df2, df3, df4):
 
 
 def rajout_colonnes(df):
+    """
+    Rajout de deux colonnes pour les jours de la semaine et les heures (sans les minutes)
+    """
     # colonne date
     df["date"] = pd.to_datetime(df[["an", "mois_num", "jour"]].rename(columns={
         "an": "year",
