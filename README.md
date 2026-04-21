@@ -31,4 +31,4 @@ Les packages utilisés et leurs versions respectives sont listées dans le fichi
 
 Attention, l'exécution d'une telle commande risque de modifier votre environnement.
 
-Une fois les packages installés, vous pouvez exécuter le fichier `main.ipynb`.
+Une fois les packages installés, vous pouvez vous placer dans le dossier `Projet_pythonDS` exécuter le fichier `main.ipynb`.
