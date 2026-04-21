@@ -160,7 +160,6 @@ def effectif_frequence(
     tableau = pd.concat([effectif, frequence], axis=1)
     tableau.columns = ["effectif", "frequence"]
 
-    # ordre = ["Indemne", "Blessé léger", "Blessé hospitalisé", "Tué"]
     tableau = tableau.reindex(ordre["grav"])
 
     total = pd.DataFrame(
@@ -222,8 +221,6 @@ def chi2_cramer(df: pd.DataFrame, cible: str) -> pd.DataFrame:
     df : pd.DataFrame
     cible : str
         La variable à expliquer (ici "grav").
-    variables : list[str]
-        Liste variables explicatives qualitatives à tester.
 
     Returns
     -------
@@ -324,7 +321,7 @@ def tableau_propre_cramer(df_chi2_cramer: pd.DataFrame):
 
     Parameters
     ----------
-    df_eff_freq : pd.DataFrame
+    df_chi2_cramer : pd.DataFrame
         Le tableau à formater.
 
     Returns
@@ -335,13 +332,11 @@ def tableau_propre_cramer(df_chi2_cramer: pd.DataFrame):
 
     labels = dict(
         variable="Variable",
-        # p_value="p-value du test",
         v_cramer="V de Cramèr"
     )
 
     table = (
         GT(df_chi2_cramer)
-        # .fmt_number(columns="p_value", dec_mark=",")
         .fmt_number(columns="v_cramer", dec_mark=",")
         .tab_header(
             subtitle="""
@@ -491,8 +486,6 @@ def nb_accidents_par(
                 .reset_index()
             )
 
-    # fig, ax = plt.subplots()
-
     bars = ax.bar(nb_accidents_groupe[variable], nb_accidents_groupe["nb_accidents"])
 
     if afficher_nb:
@@ -506,27 +499,18 @@ def nb_accidents_par(
                 fontsize=9
             )
 
-    # ax.yaxis.set_major_formatter(
-    #     ticker.FuncFormatter(lambda x, _: f"{x:,.0f}".replace(",", " "))  # ← virgule → espace
-    # )
-
     ax.grid(which="both", axis="y")
-    # ax.set_xticks(rotation=45, ha="right")
     ax.set_xticks(range(len(nb_accidents_groupe[variable])))
     ax.set_xticklabels(nb_accidents_groupe[variable], rotation=45, ha="right")
-
 
     ax.set_xlabel(nom_variable)
     ax.set_ylabel("Accidents")
     ax.set_title(f"Nombre d'accidents selon leur {nom_variable.lower()}")
-    # ax.show()
 
 
 def tab_cont_grav(
     df: pd.DataFrame,
     variable: str,
-    # ordre_lignes: list[str],
-    # ordre_colonnes: list[str]
 ) -> pd.DataFrame:
     """Construit le tableau de contingence de la variable souhaitée et de la gravité.
 
@@ -537,10 +521,6 @@ def tab_cont_grav(
     variable : str
         La variable du DataFrame pour laquelle on veut construire un tableau
         de contingence pour la gravité.
-    ordre_lignes : list[str]
-        L'ordre dans lequel afficher les modalités des lignes (utile pour construire un graphique).
-    ordre_colonnes : list[str]
-        L'ordre dans lequel afficher les modalités des colonnes.
 
     Returns
     -------
