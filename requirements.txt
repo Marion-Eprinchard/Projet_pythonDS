@@ -7,3 +7,4 @@ scipy==1.17.1
 scikit-learn==1.8.0
 imblearn==0.0
 seaborn==0.13.2
+great_tables==0.21.0

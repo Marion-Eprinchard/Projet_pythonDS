@@ -4,45 +4,89 @@ import matplotlib.cm as cm
 from scipy.stats import chi2_contingency
 
 
+def effectif_frequence(
+    df: pd.DataFrame,
+    variable: str
+):
+    """Effectue un tableau avec les effectifs et fréquences d'une variable.
 
-def tableau_propre(dataframe, par_dep=False):
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Le DataFrame sur lequel appliquer la fonction.
+    variable : str
+        La variable du DataFrame dont on veut la répartition des modalités.
+
+    Returns
+    -------
+    pd.DataFrame
+        Le tableau avec les effectifs et fréquences de chaque modalité, ainsi que le total.
     """
-    Formatage en tableaux propre des dataframes
+    effectif = pd.crosstab(df[variable], columns='count')
+    frequence = pd.crosstab(df[variable], columns='count', normalize=True).round(4)
 
-    par_dep=False : tableau national
-    par_dep=True : tableau par département
+    tableau = pd.concat([effectif, frequence], axis=1)
+    tableau.columns = ["effectif", "frequence"]
 
+    # Réordonne les lignes selon ordre_lignes
+    tableau = tableau.reindex([1, 2, 3, 4])
+
+    total = pd.DataFrame(
+        {"effectif": tableau["effectif"].sum(), "frequence": tableau["frequence"].sum()},
+        index=["Total"]
+    )
+    tableau = pd.concat([tableau, total])
+
+    tableau = tableau.reset_index()
+    tableau = tableau.rename(columns={"index": variable})
+
+    # Remplace les codes par les noms complets (Total ne change pas)
+    labels_modalites = {
+        1: "Indemne",
+        2: "Blessé léger",
+        3: "Blessé hospitalisé",
+        4: "Tué"
+    }
+    tableau[variable] = tableau[variable].map(labels_modalites).fillna("Total")
+
+    return tableau
+
+
+def tableau_propre_effectif_frequence(df_eff_freq: pd.DataFrame):
+    """
+    Formatage en tableaux propre des dataframes des effectifs et fréquences.
+
+    Parameters
+    ----------
+    df_eff_freq : pd.DataFrame
+        Le tableau à formater.
+
+    Returns
+    -------
+    GT
+        Le tableau mis au propre.
     """
 
-    if par_dep:
-        subtitle = "Résultats des votes du premier tour par département"
-        labels = dict(
-            code_departement="Code departement",
-            candidat="Candidat",
-            voix="Nombre de votes (total)",
-            pourcentage="Score (% votes exprimés)"
-        )
-    else:
-        subtitle = "Résultats des votes du premier tour"
-        labels = dict(
-            candidat="Candidat",
-            voix="Nombre de votes (total)",
-            pourcentage="Score (% votes exprimés)"
-        )
+    labels = dict(
+        effectif="Effectif",
+        frequence="Fréquence",
+        grav="Gravité"
+    )
 
     table = (
-        GT(dataframe)
-        .fmt_number(columns="voix", decimals=0, sep_mark=" ")
-        .fmt_percent(columns="pourcentage", decimals=2, dec_mark=",")
+        GT(df_eff_freq)
+        .fmt_number(columns="effectif", decimals=0, sep_mark=" ")
+        .fmt_percent(columns="frequence", decimals=1, dec_mark=",")
         .tab_header(
-            title="Élections",
-            subtitle=subtitle
+            subtitle="Répartition des effectifs et des fréquences pour la variable « gravité »",
+            title="Gravité des accidents pour les usagers"
         )
         .cols_label(**labels)
+        .cols_align(align="right")
+        .cols_align(align="left", columns="grav")
     )
 
     return table
-
 
 
 def compter_par_mois(
@@ -221,7 +265,6 @@ def tab_cont_grav(
     pd.DataFrame
         Tableau de contingence.
     """
-    # df = df.drop_duplicates(subset="id_usager")
 
     tab = (
         pd.crosstab(df[variable], df["grav"], normalize='index')
