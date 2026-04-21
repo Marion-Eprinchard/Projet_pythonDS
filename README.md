@@ -18,11 +18,10 @@ Plusieurs types de facteurs sont entrés en compte dans l'analyse et la prédict
 
 Ce projet utilise les bases de données annuelles des accidents corporels de la circulation routière (BAAC) pour les années 2022 à 2024, publiées par le ministère de l'Intérieur sur le site data.gouv.fr : https://www.data.gouv.fr/datasets/bases-de-donnees-annuelles-des-accidents-corporels-de-la-circulation-routiere-annees-de-2005-a-2024
 
-## Données
+Nous avons réalisé des analyses de pre-processing que vous pourrez retrouver dans le fichier `pre-processing.ipynb`.
 
-La base de données finale comportait 
+La base de données finale comportait 367 699 observations.
 
-## Fichiers
 
 ## Guide d'utilisation
 
@@ -32,4 +31,4 @@ Les packages utilisés et leurs versions respectives sont listées dans le fichi
 
 Attention, l'exécution d'une telle commande risque de modifier votre environnement.
 
-Une fois les packages installés, vous pouvez exécuter le fichier `main.ipynb`. 
+Une fois les packages installés, vous pouvez exécuter le fichier `main.ipynb`.

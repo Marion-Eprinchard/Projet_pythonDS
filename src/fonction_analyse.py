@@ -34,7 +34,6 @@ ordre = {
         "Nuit avec éclairage public non allumé",
         "Nuit avec éclairage public allumé"
     ],
-    # "int": ,
     "atm": [
         "Normale",
         "Pluie légère",
@@ -72,9 +71,6 @@ ordre = {
         "Avec voies d'affectation variable",
         "NA"
     ],
-    # "vosp": ,
-    # "prof": ,
-    # "plan": ,
     "surf": [
         "Normale",
         "Mouillée",
@@ -86,7 +82,6 @@ ordre = {
         "Corps gras - Huile",
         "Autre"
     ],
-    # "situ": ,
     "catv": [
         "Indéterminable",
         "Bicyclette",
@@ -111,8 +106,6 @@ ordre = {
         "VAE",
         "Autre véhicule"
     ],
-    # "obs": ,
-    # "obsm": ,
     "choc": [
         "Aucun",
         "Avant",
@@ -125,14 +118,11 @@ ordre = {
         "Côté gauche",
         "Chocs multiples (tonneaux)"
     ],
-    # "manv": ,
     "catu": [
         "Conducteur",
         "Passager",
         "Piéton"
     ],
-    # "sexe": ,
-    # "trajet": ,
     "secu1": [
         "Aucun équipement",
         "Ceinture",
@@ -152,15 +142,28 @@ ordre = {
 def effectif_frequence(
     df: pd.DataFrame,
     variable: str
-):
+) -> pd.DataFrame:
+    """Constitue un tableau récapitulatif des effectifs et fréquences de la gravité des accidents.
 
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataframe sur lequel appliquer la fonction.
+    variable
+        Variable catégorielle dont on veut les effectifs et la fréquence.
+
+    Returns
+    -------
+    pd.DataFrame
+        Le tableau.
+    """
     effectif = pd.crosstab(df[variable], columns='count')
     frequence = pd.crosstab(df[variable], columns='count', normalize=True).round(4)
 
     tableau = pd.concat([effectif, frequence], axis=1)
     tableau.columns = ["effectif", "frequence"]
 
-    tableau = tableau.reindex(ordre["grav"])
+    tableau = tableau.reindex(ordre[variable])
 
     total = pd.DataFrame(
         {"effectif": tableau["effectif"].sum(), "frequence": tableau["frequence"].sum()},
@@ -458,11 +461,12 @@ def nb_accidents_par(
         Le DataFrame sur lequel appliquer la fonction.
     variable : str
         La variable du DataFrame pour laquelle on veut compter le nombre d'accidents.
-    ordre : list[str] or None
-        L'ordre dans lequel on souhaite afficher les modalités.
-        Si vaut None, l'ordre n'est pas précisé (l'ordre sera alors alphabétique).
+    ordre_affichage : bool
+        True si on veut afficher dans l'ordre stipulé par le dictionnaire ordre.
     afficher_nb : bool
         Si vaut True, affiche le nombre exact d'accidents au-dessus de la barre du graphique.
+    ax : matplotlib.axes.Axes or None
+        Pour l'affichage côte-à-côte.
 
     Returns
     -------
@@ -582,9 +586,9 @@ def bar_chart(tc: pd.DataFrame, label: str, titre: str) -> None:
     plt.show()
 
 
-def test_chi2(df, variable1, variable2):
-    tc = pd.crosstab(df[variable1], df[variable2])
-    chi2, p_value, dof, expected = chi2_contingency(tc)
-    print(f"Chi² = {chi2:.2f}")
-    print(f"p-value = {p_value:.4f}")
-    print(f"Degrés de liberté = {dof}")
+# def test_chi2(df, variable1, variable2):
+#     tc = pd.crosstab(df[variable1], df[variable2])
+#     chi2, p_value, dof, expected = chi2_contingency(tc)
+#     print(f"Chi² = {chi2:.2f}")
+#     print(f"p-value = {p_value:.4f}")
+#     print(f"Degrés de liberté = {dof}")
