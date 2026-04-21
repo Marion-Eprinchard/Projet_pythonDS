@@ -4,6 +4,47 @@ import matplotlib.cm as cm
 from scipy.stats import chi2_contingency
 
 
+
+def tableau_propre(dataframe, par_dep=False):
+    """
+    Formatage en tableaux propre des dataframes
+
+    par_dep=False : tableau national
+    par_dep=True : tableau par département
+
+    """
+
+    if par_dep:
+        subtitle = "Résultats des votes du premier tour par département"
+        labels = dict(
+            code_departement="Code departement",
+            candidat="Candidat",
+            voix="Nombre de votes (total)",
+            pourcentage="Score (% votes exprimés)"
+        )
+    else:
+        subtitle = "Résultats des votes du premier tour"
+        labels = dict(
+            candidat="Candidat",
+            voix="Nombre de votes (total)",
+            pourcentage="Score (% votes exprimés)"
+        )
+
+    table = (
+        GT(dataframe)
+        .fmt_number(columns="voix", decimals=0, sep_mark=" ")
+        .fmt_percent(columns="pourcentage", decimals=2, dec_mark=",")
+        .tab_header(
+            title="Élections",
+            subtitle=subtitle
+        )
+        .cols_label(**labels)
+    )
+
+    return table
+
+
+
 def compter_par_mois(
     df: pd.DataFrame,
     variable: str,
@@ -180,6 +221,8 @@ def tab_cont_grav(
     pd.DataFrame
         Tableau de contingence.
     """
+    # df = df.drop_duplicates(subset="id_usager")
+
     tab = (
         pd.crosstab(df[variable], df["grav"], normalize='index')
         .reindex(columns=ordre_colonnes)
@@ -240,3 +283,5 @@ def test_chi2(df, variable1, variable2):
     print(f"Chi² = {chi2:.2f}")
     print(f"p-value = {p_value:.4f}")
     print(f"Degrés de liberté = {dof}")
+
+
