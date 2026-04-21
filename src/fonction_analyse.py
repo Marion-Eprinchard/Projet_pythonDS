@@ -4,6 +4,150 @@ import matplotlib.cm as cm
 from scipy.stats import chi2_contingency
 from great_tables import GT
 import numpy as np
+import matplotlib.ticker as ticker
+
+
+ordre = {
+    "grav": [
+        "Indemne",
+        "Blessé léger",
+        "Blessé hospitalisé",
+        "Tué"
+    ],
+    "mois": [
+        "Janvier",
+        "Février",
+        "Mars",
+        "Avril",
+        "Mai",
+        "Juin",
+        "Juillet",
+        "Août",
+        "Septembre",
+        "Octobre",
+        "Novembre",
+        "Décembre"
+    ],
+    "lum": [
+        "Plein jour",
+        "Crépuscule ou aube",
+        "Nuit sans éclairage public",
+        "Nuit avec éclairage public non allumé",
+        "Nuit avec éclairage public allumé"
+    ],
+    # "int": ,
+    "atm": [
+        "Normale", 
+        "Pluie légère", 
+        "Pluie forte", 
+        "Neige - grêle", 
+        "Brouillard - fumée", 
+        "Vent fort - tempête", 
+        "Temps éblouissant", 
+        "Temps couvert", 
+        "Autre"
+    ],
+    "col": [
+        "Deux véhicules - frontale",
+        "Deux véhicules - par l'arrière",
+        "Deux véhicules - par le côté",
+        "Trois véhicules - en chaîne",
+        "Trois véhicules - collisions multiples",
+        "Autre collision",
+        "Sans collision"
+    ],
+    "catr": [
+        "Autoroute",
+        "Route nationale",
+        "Route départementale",
+        "Voie communale",
+        "Hors réseau public",
+        "Parc de stationnement ouvert à la circulation publique",
+        "Route de métropole urbaine",
+        "Autre"
+    ],
+    "circ": [
+        "À sens unique",
+        "Bidirectionnelle",
+        "À chaussées séparées",
+        "Avec voies d'affectation variable",
+        "NA"
+    ],
+    # "vosp": ,
+    # "prof": ,
+    # "plan": ,
+    "surf": [
+        "Normale",
+        "Mouillée",
+        "Flaques",
+        "Inondée",
+        "Enneigée",
+        "Boue",
+        "Verglacée",
+        "Corps gras - Huile",
+        "Autre"
+    ],
+    # "situ": ,
+    "catv": [
+        "Indéterminable",
+        "Bicyclette",
+        "Cyclomoteur",
+        "Voiturette",
+        "Scooter",
+        "Motocyclette",
+        "VL",
+        "VU",
+        "PL",
+        "Tracteur routier",
+        "Tramway",
+        "Engin spécial",
+        "Tracteur agricole",
+        "Quad",
+        "Autobus",
+        "Autocar",
+        "Train",
+        "3RM",
+        "EDP à moteur",
+        "EDP sans moteur",
+        "VAE",
+        "Autre véhicule"
+    ],
+    # "obs": ,
+    # "obsm": ,
+    "choc": [
+        "Aucun",
+        "Avant",
+        "Avant droit",
+        "Avant gauche",
+        "Arrière",
+        "Arrière droit",
+        "Arrière gauche",
+        "Côté droit",
+        "Côté gauche",
+        "Chocs multiples (tonneaux)"
+    ],
+    # "manv": ,
+    "catu": [
+        "Conducteur",
+        "Passager",
+        "Piéton"
+    ],
+    # "sexe": ,
+    # "trajet": ,
+    "secu1": [
+        "Aucun équipement",
+        "Ceinture",
+        "Casque",
+        "Dispositif enfants",
+        "Gilet réfléchissant",
+        "Airbag (2RM/3RM)",
+        "Gants (2RM/3RM)",
+        "Gants + Airbag (2RM/3RM)",
+        "Non déterminable",
+        "Autre"
+    ],
+    "jour_semaine": ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
+}
 
 
 def effectif_frequence(
@@ -17,8 +161,8 @@ def effectif_frequence(
     tableau = pd.concat([effectif, frequence], axis=1)
     tableau.columns = ["effectif", "frequence"]
 
-    ordre = ["Indemne", "Blessé léger", "Blessé hospitalisé", "Tué"]
-    tableau = tableau.reindex(ordre)
+    # ordre = ["Indemne", "Blessé léger", "Blessé hospitalisé", "Tué"]
+    tableau = tableau.reindex(ordre["grav"])
 
     total = pd.DataFrame(
         {"effectif": tableau["effectif"].sum(), "frequence": tableau["frequence"].sum()},
@@ -211,7 +355,7 @@ def chi2_cramer(df: pd.DataFrame, cible: str) -> pd.DataFrame:
             "v_cramer": round(v_cramer, 4)
         })
 
-    tableau =(
+    tableau = (
         pd.DataFrame(resultats)
         .sort_values("v_cramer", ascending=False)
         .reset_index(drop=True)
@@ -355,7 +499,7 @@ def nb_accidents_par(
     df: pd.DataFrame,
     variable: str,
     nom_variable: str,
-    ordre: list[str] | None = None,
+    ordre_affichage: bool = False,
     afficher_nb: bool = False
 ) -> None:
     """Compte le nombre d'accidents pour une variable voulue.
@@ -384,13 +528,15 @@ def nb_accidents_par(
         .reset_index(name="nb_accidents")
     )
 
-    if ordre is not None:
+    if ordre_affichage:
         nb_accidents_groupe = (
-            nb_accidents_groupe
-            .set_index(variable)
-            .reindex(ordre)
-            .reset_index()
-        )
+                nb_accidents_groupe
+                .set_index(variable)
+                .reindex(ordre[variable])
+                .reset_index()
+            )
+
+    # fig, ax = plt.subplots()
 
     bars = plt.bar(nb_accidents_groupe[variable], nb_accidents_groupe["nb_accidents"])
 
@@ -404,6 +550,10 @@ def nb_accidents_par(
                 ha="center", va="bottom",
                 fontsize=9
             )
+    
+    # ax.yaxis.set_major_formatter(
+    #     ticker.FuncFormatter(lambda x, _: f"{x:,.0f}".replace(",", " "))  # ← virgule → espace
+    # )
 
     plt.grid(which="both", axis="y")
     plt.xticks(rotation=45, ha="right")
@@ -416,8 +566,8 @@ def nb_accidents_par(
 def tab_cont_grav(
     df: pd.DataFrame,
     variable: str,
-    ordre_lignes: list[str],
-    ordre_colonnes: list[str]
+    # ordre_lignes: list[str],
+    # ordre_colonnes: list[str]
 ) -> pd.DataFrame:
     """Construit le tableau de contingence de la variable souhaitée et de la gravité.
 
@@ -441,8 +591,8 @@ def tab_cont_grav(
 
     tab = (
         pd.crosstab(df[variable], df["grav"], normalize='index')
-        .reindex(columns=ordre_colonnes)
-        .reindex(index=ordre_lignes)
+        .reindex(columns=ordre["grav"])
+        .reindex(index=ordre[variable])
     )
     return tab
 
@@ -479,7 +629,7 @@ def bar_chart(tc: pd.DataFrame, label: str, titre: str) -> None:
                 ax.text(
                     bar.get_x() + bar.get_width() / 2,
                     bar.get_y() + height / 2,
-                    f"{height:.1%}",
+                    f"{height:.1%}".replace(".", ","),
                     ha="center", va="center",
                     fontsize=8, color="black"
                 )
@@ -499,5 +649,3 @@ def test_chi2(df, variable1, variable2):
     print(f"Chi² = {chi2:.2f}")
     print(f"p-value = {p_value:.4f}")
     print(f"Degrés de liberté = {dof}")
-
-
