@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 
 
-def y_x_train_test(df, var_y, list_var_x):
+def y_x_train_test(df, var_y: str, list_var_x: list[str]):
     """
     Création des données y et X puis des ensembles Train/Test
     """
@@ -47,7 +47,7 @@ def importance_variable(modele, X_train):
     return df_importances.head(10)
 
 
-def importance_variable_gravite(modele, X_test, num_grav):
+def importance_variable_gravite(modele, X_test, num_grav: int):
     """
     Dataframe de l'influence des variables sur les classes prédites
     Top 10

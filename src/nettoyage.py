@@ -4,7 +4,7 @@ import numpy as np
 
 
 # Fonction pour le recodage
-def recodage(df, mapping):
+def recodage(df, mapping: dict):
     """
     Recodage du noms des variables
 
@@ -13,7 +13,11 @@ def recodage(df, mapping):
     """
     df2 = df.copy()
     for col, dic in mapping.items():
-        df2[col] = df2[col].map(dic)
+        if col in df2.columns:
+            df2[col] = df2[col].map(dic)
+        else:
+            print(f"Colonne '{col}' absente du DataFrame")
+
     return df2
 
 
@@ -399,7 +403,7 @@ def colonnes_a_supprimer():
     """
     return {"com", "adr", "voie", "v1", "v2", "num_veh_x", "senc", "motor", "occutc", "num_veh_y",
             "place", "locp", "actp", "etatp", "vops", "pr", "pr1", "lartpc", "larrout", "secu2",
-            "secu3", "nbv"}
+            "secu3", "nbv", "vam"}
 
 
 # transformation année de naissance en age
