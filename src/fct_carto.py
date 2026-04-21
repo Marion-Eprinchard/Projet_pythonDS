@@ -153,7 +153,7 @@ def carte_departement(df_carte, blessure: str = None, an: int = None, ax=None):
     cbar.yaxis.set_major_formatter(mtick.PercentFormatter())
 
     # Titre dynamique
-    titre = "Proportion de victimes par département"
+    titre = "Proportion d'usagers par département"
 
     if blessure is not None:
         titre += f" – {blessure.lower()}"
@@ -161,9 +161,9 @@ def carte_departement(df_carte, blessure: str = None, an: int = None, ax=None):
         titre += " – toutes blessures"
 
     if an is not None:
-        titre += f" – année {an}"
+        titre += f"; année {an}"
     else:
-        titre += " – toutes années"
+        titre += "; 2022-2024"
 
     ax.set_title(titre, fontsize=16)
     ax.axis("off")
