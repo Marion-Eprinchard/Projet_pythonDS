@@ -241,7 +241,6 @@ def chi2_cramer(df: pd.DataFrame, cible: str) -> pd.DataFrame:
         "col",
         "catr",
         "circ",
-        "vosp",
         "prof",
         "plan",
         "surf",
@@ -453,7 +452,8 @@ def nb_accidents_par(
     variable: str,
     nom_variable: str,
     ordre_affichage: bool = False,
-    afficher_nb: bool = False
+    afficher_nb: bool = False,
+    ax=None
 ) -> None:
     """Compte le nombre d'accidents pour une variable voulue.
 
@@ -473,6 +473,8 @@ def nb_accidents_par(
     -------
     None
     """
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(8, 5))
 
     nb_accidents_groupe = (
         df.drop_duplicates(subset="Num_Acc")
@@ -491,12 +493,12 @@ def nb_accidents_par(
 
     # fig, ax = plt.subplots()
 
-    bars = plt.bar(nb_accidents_groupe[variable], nb_accidents_groupe["nb_accidents"])
+    bars = ax.bar(nb_accidents_groupe[variable], nb_accidents_groupe["nb_accidents"])
 
     if afficher_nb:
         for bar in bars:
             height = bar.get_height()
-            plt.text(
+            ax.text(
                 bar.get_x() + bar.get_width() / 2,
                 height,
                 int(height),
@@ -508,12 +510,16 @@ def nb_accidents_par(
     #     ticker.FuncFormatter(lambda x, _: f"{x:,.0f}".replace(",", " "))  # ← virgule → espace
     # )
 
-    plt.grid(which="both", axis="y")
-    plt.xticks(rotation=45, ha="right")
-    plt.xlabel(nom_variable)
-    plt.ylabel("Accidents")
-    plt.title(f"Nombre d'accidents selon leur {nom_variable.lower()}")
-    plt.show()
+    ax.grid(which="both", axis="y")
+    # ax.set_xticks(rotation=45, ha="right")
+    ax.set_xticks(range(len(nb_accidents_groupe[variable])))
+    ax.set_xticklabels(nb_accidents_groupe[variable], rotation=45, ha="right")
+
+
+    ax.set_xlabel(nom_variable)
+    ax.set_ylabel("Accidents")
+    ax.set_title(f"Nombre d'accidents selon leur {nom_variable.lower()}")
+    # ax.show()
 
 
 def tab_cont_grav(
