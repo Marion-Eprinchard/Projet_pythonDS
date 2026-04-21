@@ -21,7 +21,7 @@ def initialisation_carte():
     return departement_borders
 
 
-def creation_df_carte(df, blessure=False, an=False):
+def creation_df_carte(df, blessure: bool = False, an: bool = False):
     """
     Création des cartes à partir des dataframes par departement,
     possibilité de regroupement en fonction de la blessure et/ou de l'année
@@ -114,7 +114,7 @@ def creation_df_carte(df, blessure=False, an=False):
     return df_carte
 
 
-def carte_departement(df_carte, blessure=None, an=None, ax=None):
+def carte_departement(df_carte, blessure: str = None, an: int = None, ax=None):
     """
     Fonction pour créer une carte en proportion
 

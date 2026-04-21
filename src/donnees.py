@@ -73,7 +73,7 @@ def import_donnees():
     return donnees_completes
 
 
-def renomer_cle_jointure(nom_table, nouveau_nom, ancien_nom):
+def renomer_cle_jointure(nom_table, nouveau_nom: str, ancien_nom: str):
     """
     Renommer la clé de jointure
     """
