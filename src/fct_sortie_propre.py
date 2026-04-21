@@ -4,13 +4,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-def pretty_report(y_true, y_pred, cmap="Blues"):
+def beau_report(y_test, y_pred, cmap="Blues"):
     """
-    Tableau joli, espacé, coloré, fidèle à classification_report,
-    avec support correct pour 'accuracy'.
+    Tableau joli, coloré pour classification_report
     """
-    # Récupérer le report sous forme de dict
-    report = classification_report(y_true, y_pred, output_dict=True)
+    # Récupérer le report
+    report = classification_report(y_test, y_pred, output_dict=True)
 
     # Conversion en DataFrame
     df = pd.DataFrame(report).T
@@ -18,7 +17,7 @@ def pretty_report(y_true, y_pred, cmap="Blues"):
     # Réordonner les colonnes dans le même ordre que le texte
     df = df[["precision", "recall", "f1-score", "support"]]
 
-    # Convertir support en entier (là où c'est possible)
+    # Convertir support en entier
     df["support"] = pd.to_numeric(df["support"], errors="coerce").fillna(0).astype(int)
 
     # Fixer le support de accuracy = somme des supports des classes
@@ -26,7 +25,7 @@ def pretty_report(y_true, y_pred, cmap="Blues"):
     df.loc["accuracy", "support"] = total_support
 
     # Styliser : couleurs + espacement
-    styled = (
+    style = (
         df.style
         .background_gradient(cmap=cmap, subset=["precision", "recall", "f1-score"])
         .format({
@@ -44,10 +43,13 @@ def pretty_report(y_true, y_pred, cmap="Blues"):
         .set_properties(**{"font-size": "13pt"})
     )
 
-    return styled
+    return style
 
 
 def matrice_confusion(donnees):
+    """
+    Belle matrice de confusion
+    """
     plt.figure(figsize=(6, 4))
     sns.heatmap(donnees, annot=True, fmt='d', cmap='Purples',
                 xticklabels=['Prédit 1', 'Prédit 2', 'Prédit 3', 'Prédit 4'],
@@ -58,11 +60,11 @@ def matrice_confusion(donnees):
     plt.show()
 
 
-def pretty_importances(df_importances, cmap="Blues"):
+def beau_importances(df_importances, cmap="Blues"):
     """
-    Retourne un tableau stylé pour les importances de variables.
+    Retourne un beau tableau pour les importances de variables
     """
-    styled = (
+    style = (
         df_importances.style
         .background_gradient(cmap=cmap, subset=["importance"])
         .format({"importance": "{:.4f}"})
@@ -74,24 +76,24 @@ def pretty_importances(df_importances, cmap="Blues"):
         )
         .set_properties(**{"font-size": "13pt"})
     )
-    return styled
+    return style
 
 
-def pretty_importance_gravite(df_corr):
+def beau_importance_gravite(df_corr):
     """
-    Tableau propre, espacé, coloré :
+    Tableau propre et coloré pour l'influence des variable sur la prédiction des gravité :
     - rouge = corrélation positive
     - bleu = corrélation négative
     - intensité = force de la corrélation
     """
-    styled = (
+    style = (
         df_corr.style
         .background_gradient(
-            cmap="coolwarm",  # bleu ↔ rouge
-            subset=["corr"]   # on colore la corrélation signée
+            cmap="coolwarm",
+            subset=["corr"]
         )
         .background_gradient(
-            cmap="Purples",   # violet pour l'importance absolue
+            cmap="Purples",
             subset=["abs_corr"]
         )
         .format({
@@ -106,4 +108,4 @@ def pretty_importance_gravite(df_corr):
         )
         .set_properties(**{"font-size": "13pt"})
     )
-    return styled
+    return style

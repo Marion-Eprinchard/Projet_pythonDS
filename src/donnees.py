@@ -88,4 +88,4 @@ def concatenation_annees(donnees, table, annees=[24, 23, 22]):
     donnees : dictionnaire
     table : nom du fichier (caract, lieux, vehicule, usager)
     """
-    return pd.concat([donnees[table][a] for a in annees], ignore_index=True)
+    return pd.concat([donnees[table.lower()][a] for a in annees], ignore_index=True)

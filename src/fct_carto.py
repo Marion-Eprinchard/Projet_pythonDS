@@ -156,14 +156,14 @@ def carte_departement(df_carte, blessure=None, an=None, ax=None):
     titre = "Proportion de victimes par département"
 
     if blessure is not None:
-        titre += f" – {blessure}"
+        titre += f" – {blessure.lower()}"
     else:
-        titre += " – Toutes blessures"
+        titre += " – toutes blessures"
 
     if an is not None:
         titre += f" – année {an}"
     else:
-        titre += " – Toutes années"
+        titre += " – toutes années"
 
     ax.set_title(titre, fontsize=16)
     ax.axis("off")
