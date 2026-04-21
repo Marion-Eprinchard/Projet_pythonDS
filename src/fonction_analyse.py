@@ -590,7 +590,7 @@ def bar_chart(tc: pd.DataFrame, label: str, titre: str) -> None:
                     bar.get_y() + height / 2,
                     f"{height:.1%}".replace(".", ","),
                     ha="center", va="center",
-                    fontsize=8, color="black"
+                    fontsize=8, color="#009BBD"
                 )
 
     plt.xlabel(label)
