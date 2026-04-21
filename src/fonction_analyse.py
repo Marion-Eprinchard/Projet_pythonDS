@@ -4,7 +4,6 @@ import matplotlib.cm as cm
 from scipy.stats import chi2_contingency
 from great_tables import GT
 import numpy as np
-import matplotlib.ticker as ticker
 
 
 ordre = {
@@ -37,14 +36,14 @@ ordre = {
     ],
     # "int": ,
     "atm": [
-        "Normale", 
-        "Pluie légère", 
-        "Pluie forte", 
-        "Neige - grêle", 
-        "Brouillard - fumée", 
-        "Vent fort - tempête", 
-        "Temps éblouissant", 
-        "Temps couvert", 
+        "Normale",
+        "Pluie légère",
+        "Pluie forte",
+        "Neige - grêle",
+        "Brouillard - fumée",
+        "Vent fort - tempête",
+        "Temps éblouissant",
+        "Temps couvert",
         "Autre"
     ],
     "col": [
@@ -215,7 +214,8 @@ def tableau_propre_effectif_frequence(df_eff_freq: pd.DataFrame):
 
 def chi2_cramer(df: pd.DataFrame, cible: str) -> pd.DataFrame:
     """
-    Calcule le chi2 et le V de Cramér entre la variable cible et une liste de variables qualitatives.
+    Calcule le chi2 et le V de Cramér entre la variable cible et
+    une liste de variables qualitatives.
 
     Parameters
     ----------
@@ -313,7 +313,7 @@ def chi2_cramer(df: pd.DataFrame, cible: str) -> pd.DataFrame:
         .sort_values("v_cramer", ascending=False)
         .reset_index(drop=True)
     )
-    
+
     tableau["variable"] = tableau["variable"].map(labels)
 
     return tableau

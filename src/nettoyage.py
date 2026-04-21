@@ -402,7 +402,7 @@ def colonnes_a_supprimer():
     Suppression des colonnes inutiles
     """
     return {"com", "adr", "voie", "v1", "v2", "num_veh_x", "senc", "motor", "occutc", "num_veh_y",
-            "place", "locp", "actp", "etatp", "vops", "pr", "pr1", "lartpc", "larrout", "secu2",
+            "place", "locp", "actp", "etatp", "vosp", "pr", "pr1", "lartpc", "larrout", "secu2",
             "secu3", "nbv", "vam"}
 
 

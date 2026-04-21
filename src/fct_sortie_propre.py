@@ -64,10 +64,13 @@ def beau_importances(df_importances, cmap="Blues"):
     """
     Retourne un beau tableau pour les importances de variables
     """
+    df2 = df_importances.copy()
+    df2.columns = [col.capitalize() for col in df2.columns]
+
     style = (
-        df_importances.style
-        .background_gradient(cmap=cmap, subset=["importance"])
-        .format({"importance": "{:.4f}"})
+        df2.style
+        .background_gradient(cmap=cmap, subset=["Importance"])
+        .format({"Importance": "{:.4f}"})
         .set_table_styles(
             [
                 {"selector": "th", "props": [("padding", "8px 16px")]},
@@ -86,19 +89,27 @@ def beau_importance_gravite(df_corr):
     - bleu = corrélation négative
     - intensité = force de la corrélation
     """
+    df2 = df_corr.copy()
+
+    # Renommage clair des colonnes
+    df2 = df2.rename(columns={
+        "corr": "Correlation",
+        "abs_corr": "Correlation absolue"
+    })
+
     style = (
-        df_corr.style
+        df2.style
         .background_gradient(
             cmap="coolwarm",
-            subset=["corr"]
+            subset=["Correlation"]
         )
         .background_gradient(
             cmap="Purples",
-            subset=["abs_corr"]
+            subset=["Correlation absolue"]
         )
         .format({
-            "corr": "{:.4f}",
-            "abs_corr": "{:.4f}"
+            "Correlation": "{:.4f}",
+            "Correlation absolue": "{:.4f}"
         })
         .set_table_styles(
             [
