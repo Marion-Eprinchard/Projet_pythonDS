@@ -109,3 +109,40 @@ def beau_importance_gravite(df_corr):
         .set_properties(**{"font-size": "13pt"})
     )
     return style
+
+
+def belle_colonnes(df, max_lines=2):
+    """
+    Affiche les colonnes d'un DataFrame
+    """
+    cols = list(df.columns)
+    n = len(cols)
+
+    # Nombre de colonnes par ligne
+    per_line = (n + max_lines - 1) // max_lines
+
+    # Découpage en lignes
+    rows = [cols[i:i+per_line] for i in range(0, n, per_line)]
+
+    df_cols = pd.DataFrame(rows)
+
+    style = (
+        df_cols.style
+        .hide(axis="index")
+        .hide(axis="columns")
+        .set_properties(**{"font-size": "13pt", "padding": "6px 14px"})
+    )
+    return style
+
+
+def belle_head(df, n=5):
+    """
+    Affiche les n premières lignes d'un DataFrame dans un tableau propre
+    """
+    df_head = df.head(n)
+
+    style = (
+        df_head.style
+        .set_properties(**{"font-size": "11pt", "padding": "8px 15px"})
+    )
+    return style
