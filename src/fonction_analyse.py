@@ -175,53 +175,6 @@ def effectif_frequence(
 
     return tableau
 
-# def effectif_frequence(
-#     df: pd.DataFrame,
-#     variable: str
-# ):
-#     """Effectue un tableau avec les effectifs et fréquences d'une variable.
-
-#     Parameters
-#     ----------
-#     df : pd.DataFrame
-#         Le DataFrame sur lequel appliquer la fonction.
-#     variable : str
-#         La variable du DataFrame dont on veut la répartition des modalités.
-
-#     Returns
-#     -------
-#     pd.DataFrame
-#         Le tableau avec les effectifs et fréquences de chaque modalité, ainsi que le total.
-#     """
-#     effectif = pd.crosstab(df[variable], columns='count')
-#     frequence = pd.crosstab(df[variable], columns='count', normalize=True).round(4)
-
-#     tableau = pd.concat([effectif, frequence], axis=1)
-#     tableau.columns = ["effectif", "frequence"]
-
-#     # Réordonne les lignes selon ordre_lignes
-#     tableau = tableau.reindex([1, 2, 3, 4])
-
-#     total = pd.DataFrame(
-#         {"effectif": tableau["effectif"].sum(), "frequence": tableau["frequence"].sum()},
-#         index=["Total"]
-#     )
-#     tableau = pd.concat([tableau, total])
-
-#     tableau = tableau.reset_index()
-#     tableau = tableau.rename(columns={"index": variable})
-
-#     # Remplace les codes par les noms complets (Total ne change pas)
-#     labels_modalites = {
-#         1: "Indemne",
-#         2: "Blessé léger",
-#         3: "Blessé hospitalisé",
-#         4: "Tué"
-#     }
-#     tableau[variable] = tableau[variable].map(labels_modalites).fillna("Total")
-
-#     return tableau
-
 
 def tableau_propre_effectif_frequence(df_eff_freq: pd.DataFrame):
     """
@@ -550,7 +503,7 @@ def nb_accidents_par(
                 ha="center", va="bottom",
                 fontsize=9
             )
-    
+
     # ax.yaxis.set_major_formatter(
     #     ticker.FuncFormatter(lambda x, _: f"{x:,.0f}".replace(",", " "))  # ← virgule → espace
     # )
