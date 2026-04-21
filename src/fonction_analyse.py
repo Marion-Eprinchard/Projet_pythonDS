@@ -2,6 +2,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from scipy.stats import chi2_contingency
+from great_tables import GT
+import numpy as np
 
 
 def effectif_frequence(
@@ -84,6 +86,152 @@ def tableau_propre_effectif_frequence(df_eff_freq: pd.DataFrame):
         .cols_label(**labels)
         .cols_align(align="right")
         .cols_align(align="left", columns="grav")
+    )
+
+    return table
+
+
+def chi2_cramer(df: pd.DataFrame, cible: str) -> pd.DataFrame:
+    """
+    Calcule le chi2 et le V de Cramér entre la variable cible et une liste de variables qualitatives.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+    cible : str
+        La variable à expliquer (ici "grav").
+    variables : list[str]
+        Liste variables explicatives qualitatives à tester.
+
+    Returns
+    -------
+    pd.DataFrame
+        Tableau récapitulatif trié par V de Cramér décroissant.
+    """
+    resultats = []
+    variables = [
+        "mois",
+        "lum",
+        "dep",
+        "agg",
+        "int",
+        "atm",
+        "col",
+        "catr",
+        "circ",
+        "vosp",
+        "prof",
+        "plan",
+        "surf",
+        "infra",
+        "situ",
+        "catv",
+        "obs",
+        "obsm",
+        "choc",
+        "manv",
+        "catu",
+        "sexe",
+        "trajet",
+        "secu1",
+        "jour_semaine",
+        "hr"
+    ]
+    labels = {
+        "mois": "Mois de l'accident",
+        "lum": "Luminosité et conditions d'éclairage",
+        "dep": "Département de l'accident",
+        "agg": "En ou hors agglomération",
+        "int": "Intersection",
+        "atm": "Conditions atmosphériques",
+        "col": "Type de collision",
+        "catr": "Catégorie de route",
+        "circ": "Régime de circulation",
+        "vosp": "Existence d'une voie réservée",
+        "prof": "Déclivité de la route à l'endroit de l'accident",
+        "plan": "Tracé en plan",
+        "surf": "État de la surface",
+        "infra": "Infrastructure ou aménagement",
+        "situ": "Situation de l'accident",
+        "catv": "Catégorie du véhicule",
+        "obs": "Obstacle fixe heurté",
+        "obsm": "Obstacle mobile heurté",
+        "choc": "Point de choc initial",
+        "manv": "Manoeuvre principale avant l'accident",
+        "catu": "Catégorie de l'usager",
+        "sexe": "Sexe de l'usager",
+        "trajet": "Type de trajet",
+        "secu1": "Équipement de sécurité",
+        "jour_semaine": "Jour de la semaine",
+        "hr": "Heure"
+    }
+
+    for var in variables:
+        # Tableau de contingence
+        tab = pd.crosstab(df[cible], df[var])
+
+        # Test du chi2
+        chi2, p_value, dof, _ = chi2_contingency(tab)
+
+        # V de Cramér
+        n = tab.sum().sum()
+        k = min(tab.shape) - 1
+        v_cramer = np.sqrt(chi2 / (n * k))
+
+        resultats.append({
+            "variable": var,
+            "chi2": round(chi2, 2),
+            "p_value": p_value,
+            "ddl": dof,
+            "v_cramer": round(v_cramer, 4)
+        })
+
+    tableau =(
+        pd.DataFrame(resultats)
+        .sort_values("v_cramer", ascending=False)
+        .reset_index(drop=True)
+    )
+    
+    tableau["variable"] = tableau["variable"].map(labels)
+
+    return tableau
+
+
+def tableau_propre_cramer(df_chi2_cramer: pd.DataFrame):
+    """
+    Formatage en tableaux propre des dataframes récapitulatifs des V de Cramèr.
+
+    Parameters
+    ----------
+    df_eff_freq : pd.DataFrame
+        Le tableau à formater.
+
+    Returns
+    -------
+    GT
+        Le tableau mis au propre.
+    """
+
+    labels = dict(
+        variable="Variable",
+        # p_value="p-value du test",
+        v_cramer="V de Cramèr"
+    )
+
+    table = (
+        GT(df_chi2_cramer)
+        # .fmt_number(columns="p_value", dec_mark=",")
+        .fmt_number(columns="v_cramer", dec_mark=",")
+        .tab_header(
+            subtitle="""
+                Résultats des V de Cramèr
+                entre la gravité et différentes variables qualitatives
+            """,
+            title="Association entre la gravité et différentes variables"
+        )
+        .cols_label(**labels)
+        .cols_align(align="right")
+        .cols_align(align="left", columns="variable")
     )
 
     return table
